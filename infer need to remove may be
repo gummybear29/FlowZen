@@ -1,0 +1,58 @@
+import com.yourpackage.util.FileUtils  // ✅ use your real package
+
+class TerriblePoemViewModel(application: Application) : AndroidViewModel(application) {
+
+    val uiState = MutableStateFlow(TerriblePoemUiState())
+
+    private var llmInference: LlmInference? = null
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val modelFile = FileUtils.copyAssetToFileIfNeeded(
+                    application,
+                    "gemma3_4b.task"
+                )
+
+                val options = LlmInferenceOptions.builder()
+                    .setModelPath(modelFile.absolutePath)
+                    .setMaxTokens(1000)
+                    .setMaxNumImages(1)
+                    .build()
+
+                llmInference = LlmInference.createFromOptions(application, options)
+                uiState.update { it.copy(loaded = true, loadingError = null) }
+
+            } catch (th: Throwable) {
+                uiState.update { it.copy(loaded = false, loadingError = th) }
+            }
+        }
+    }
+
+    override fun onCleared() {
+        llmInference?.close()
+        super.onCleared()
+    }
+}
+   init {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val modelFile = FileUtils.copyAssetToFileIfNeeded(
+                    application,
+                    "gemma3_4b.task"
+                )
+
+                val options = LlmInferenceOptions.builder()
+                    .setModelPath(modelFile.absolutePath)
+                    .setMaxTokens(1000)
+                    .setMaxNumImages(1)
+                    .build()
+
+                llmInference = LlmInference.createFromOptions(application, options)
+                uiState.update { it.copy(loaded = true, loadingError = null) }
+
+            } catch (th: Throwable) {
+                uiState.update { it.copy(loaded = false, loadingError = th) }
+            }
+        }
+    }
